@@ -6,7 +6,7 @@ type AvatarProps = {
 }
 
 const Avatar = ({ src = '', alt = '' }: AvatarProps) => (
-  <div className="relative h-10 w-10 rounded-full bg-gray-200">
+  <div className="relative h-10 w-10 overflow-hidden rounded-full bg-gray-200">
     {src ? <Image src={src} alt={alt} layout="fill" /> : null}
   </div>
 )
