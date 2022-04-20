@@ -6,6 +6,9 @@
     "start": "next start"
   },
   "dependencies": {
+    "@nhost/nextjs": "^1.0.14",
+    "@nhost/react": "^0.5.3",
+    "date-fns": "^2.28.0",
     "next": "latest",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
