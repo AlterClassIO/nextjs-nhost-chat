@@ -1,8 +1,9 @@
+import { useRef } from 'react'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import { useAuthenticationStatus, useUserData } from '@nhost/nextjs'
-import { useQuery, useMutation } from '@apollo/client'
+import { useSubscription, useMutation } from '@apollo/client'
 import Message, { MessageProps } from '../components/Message'
 import MessageSkeleton from '../components/MessageSkeleton'
 import Form from '../components/Form'
@@ -15,6 +16,8 @@ import logo from '../public/logo.svg'
 import { GET_MESSAGES, CREATE_MESSAGE } from '../lib/queries'
 
 const Home: NextPage = () => {
+  const messagesListRef = useRef<HTMLInputElement>(null)
+
   const { isLoading: isLoadingUser, isAuthenticated } =
     useAuthenticationStatus()
   const user = useUserData()
@@ -23,14 +26,23 @@ const Home: NextPage = () => {
     loading: isLoadingMessages,
     error,
     data,
-  } = useQuery(GET_MESSAGES, {
+  } = useSubscription(GET_MESSAGES, {
     skip: isLoadingUser || !isAuthenticated,
+    onSubscriptionData: () => {
+      const listEl = messagesListRef?.current
+      if (listEl) {
+        listEl.scrollTo({
+          top: listEl.scrollHeight,
+          behavior: 'smooth',
+        })
+      }
+    },
   })
   const messages = data?.messages ?? []
 
   const [createMessage] = useMutation(CREATE_MESSAGE)
 
-  const sendMessage = (text: string) => {
+  const sendMessage = async (text: string) => {
     if (!user) return
 
     return createMessage({
@@ -67,7 +79,10 @@ const Home: NextPage = () => {
             <Login />
           ) : (
             <>
-              <div className="w-full flex-1 overflow-y-auto">
+              <div
+                ref={messagesListRef}
+                className="w-full flex-1 overflow-y-auto"
+              >
                 <div className="mx-auto max-w-screen-md">
                   <div className="mt-12 border-b pb-6 text-center">
                     <h1 className="text-3xl font-extrabold">

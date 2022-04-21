@@ -33,7 +33,7 @@ const Message = ({ text, createdAt, author }: MessageProps) => {
           </span>
           {createdAt ? (
             <span className="inline-block text-xs text-gray-500">
-              {format(new Date(createdAt), 'dd/MM/yyyy')}
+              {format(new Date(createdAt), 'dd/MM/yyyy - HH:mm')}
             </span>
           ) : null}
         </div>
