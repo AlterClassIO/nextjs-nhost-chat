@@ -15,3 +15,11 @@ export const GET_MESSAGES = gql`
     }
   }
 `
+
+export const CREATE_MESSAGE = gql`
+  mutation CreateMessage($object: messages_insert_input!) {
+    insert_messages_one(object: $object) {
+      id
+    }
+  }
+`

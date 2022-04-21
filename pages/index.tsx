@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import { useAuthenticationStatus, useUserData } from '@nhost/nextjs'
-import { useQuery } from '@apollo/client'
+import { useQuery, useMutation } from '@apollo/client'
 import Message, { MessageProps } from '../components/Message'
 import MessageSkeleton from '../components/MessageSkeleton'
 import Form from '../components/Form'
@@ -12,7 +12,7 @@ import Spinner from '../components/Spinner'
 
 import logo from '../public/logo.svg'
 
-import { GET_MESSAGES } from '../lib/queries'
+import { GET_MESSAGES, CREATE_MESSAGE } from '../lib/queries'
 
 const Home: NextPage = () => {
   const { isLoading: isLoadingUser, isAuthenticated } =
@@ -26,8 +26,22 @@ const Home: NextPage = () => {
   } = useQuery(GET_MESSAGES, {
     skip: isLoadingUser || !isAuthenticated,
   })
-
   const messages = data?.messages ?? []
+
+  const [createMessage] = useMutation(CREATE_MESSAGE)
+
+  const sendMessage = (text: string) => {
+    if (!user) return
+
+    return createMessage({
+      variables: {
+        object: {
+          text,
+          authorId: user.id,
+        },
+      },
+    })
+  }
 
   return (
     <>
@@ -93,7 +107,7 @@ const Home: NextPage = () => {
               </div>
 
               <div className="mx-auto mb-6 w-full max-w-screen-md flex-shrink-0">
-                <Form />
+                <Form onSubmit={sendMessage} />
               </div>
             </>
           )}

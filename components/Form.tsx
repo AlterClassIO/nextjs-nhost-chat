@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 
 export type FormProps = {
   onSubmit?: (newMessage: string) => void
@@ -7,9 +8,15 @@ export type FormProps = {
 const Form = ({ onSubmit = () => null }: FormProps) => {
   const [value, setValue] = useState('')
 
-  const handleOnSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
+  const handleOnSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
     e.preventDefault()
-    onSubmit(value)
+    try {
+      await onSubmit(value)
+      setValue('')
+    } catch (err) {
+      // Something went wrong!
+      toast.error('Unable to send message', { id: 'sendMessage' })
+    }
   }
 
   return (
