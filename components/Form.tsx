@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-type FormProps = {
+export type FormProps = {
   onSubmit?: (newMessage: string) => void
 }
 

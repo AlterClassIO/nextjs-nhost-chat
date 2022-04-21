@@ -2,7 +2,9 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import { useAuthenticationStatus, useUserData } from '@nhost/nextjs'
-import Message from '../components/Message'
+import { useQuery } from '@apollo/client'
+import Message, { MessageProps } from '../components/Message'
+import MessageSkeleton from '../components/MessageSkeleton'
 import Form from '../components/Form'
 import Avatar from '../components/Avatar'
 import Login from '../components/Login'
@@ -10,102 +12,22 @@ import Spinner from '../components/Spinner'
 
 import logo from '../public/logo.svg'
 
-const messages = [
-  {
-    id: '001',
-    createdAt: '2022-04-11T16:59:02.243392+00:00',
-    user: {
-      displayName: 'Elon Musk',
-      avatarUrl: '',
-    },
-    text: 'Hello, World!',
-  },
-  {
-    id: '002',
-    createdAt: '2022-04-11T16:59:02.243392+00:00',
-    user: {
-      displayName: 'Elon Musk',
-      avatarUrl: '',
-    },
-    text: 'Hello, World!',
-  },
-  {
-    id: '003',
-    createdAt: '2022-04-11T16:59:02.243392+00:00',
-    user: {
-      displayName: 'Elon Musk',
-      avatarUrl: '',
-    },
-    text: 'Hello, World!',
-  },
-  {
-    id: '004',
-    createdAt: '2022-04-11T16:59:02.243392+00:00',
-    user: {
-      displayName: 'Elon Musk',
-      avatarUrl: '',
-    },
-    text: 'Hello, World!',
-  },
-  {
-    id: '005',
-    createdAt: '2022-04-11T16:59:02.243392+00:00',
-    user: {
-      displayName: 'Elon Musk',
-      avatarUrl: '',
-    },
-    text: 'Hello, World!',
-  },
-  {
-    id: '006',
-    createdAt: '2022-04-11T16:59:02.243392+00:00',
-    user: {
-      displayName: 'Elon Musk',
-      avatarUrl: '',
-    },
-    text: 'Hello, World!',
-  },
-  {
-    id: '007',
-    createdAt: '2022-04-11T16:59:02.243392+00:00',
-    user: {
-      displayName: 'Elon Musk',
-      avatarUrl: '',
-    },
-    text: 'Hello, World!',
-  },
-  {
-    id: '008',
-    createdAt: '2022-04-11T16:59:02.243392+00:00',
-    user: {
-      displayName: 'Elon Musk',
-      avatarUrl: '',
-    },
-    text: 'Hello, World!',
-  },
-  {
-    id: '009',
-    createdAt: '2022-04-11T16:59:02.243392+00:00',
-    user: {
-      displayName: 'Elon Musk',
-      avatarUrl: '',
-    },
-    text: 'Hello, World!',
-  },
-  {
-    id: '011',
-    createdAt: '2022-04-11T16:59:02.243392+00:00',
-    user: {
-      displayName: 'Elon Musk',
-      avatarUrl: '',
-    },
-    text: 'Hello, World!',
-  },
-]
+import { GET_MESSAGES } from '../lib/queries'
 
 const Home: NextPage = () => {
-  const { isLoading, isAuthenticated } = useAuthenticationStatus()
+  const { isLoading: isLoadingUser, isAuthenticated } =
+    useAuthenticationStatus()
   const user = useUserData()
+
+  const {
+    loading: isLoadingMessages,
+    error,
+    data,
+  } = useQuery(GET_MESSAGES, {
+    skip: isLoadingUser || !isAuthenticated,
+  })
+
+  const messages = data?.messages ?? []
 
   return (
     <>
@@ -125,7 +47,7 @@ const Home: NextPage = () => {
         </header>
 
         <main className="flex h-[calc(100vh-3.5rem)] flex-col items-center justify-center">
-          {isLoading ? (
+          {isLoadingUser ? (
             <Spinner />
           ) : !isAuthenticated ? (
             <Login />
@@ -144,13 +66,29 @@ const Home: NextPage = () => {
                     </p>
                   </div>
 
-                  <ol className="my-6 space-y-4">
-                    {messages.map((msg) => (
-                      <li key={msg.id}>
-                        <Message {...msg} />
-                      </li>
-                    ))}
-                  </ol>
+                  {isLoadingMessages ? (
+                    <div className="my-6 space-y-4">
+                      {[...new Array(5)].map((_, i) => (
+                        <MessageSkeleton key={i} />
+                      ))}
+                    </div>
+                  ) : error ? (
+                    <p className="my-6 text-center text-red-500">
+                      Something went wrong. Try to refresh the page.
+                    </p>
+                  ) : messages.length > 0 ? (
+                    <ol className="my-6 space-y-4">
+                      {messages.map((msg: MessageProps) => (
+                        <li key={msg.id}>
+                          <Message {...msg} />
+                        </li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <p className="my-6 text-center text-gray-500">
+                      No messages yet.
+                    </p>
+                  )}
                 </div>
               </div>
 
