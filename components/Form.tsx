@@ -22,7 +22,7 @@ const Form = ({ onSubmit = () => null }: FormProps) => {
   return (
     <form
       onSubmit={handleOnSubmit}
-      className="flex items-center justify-between space-x-4 rounded-md bg-gray-200"
+      className="flex items-center justify-between space-x-4 rounded-md bg-gray-200 pr-4"
     >
       <input
         type="text"
@@ -33,7 +33,7 @@ const Form = ({ onSubmit = () => null }: FormProps) => {
       />
       <button
         type="submit"
-        className="pr-4 text-sm font-medium uppercase text-gray-600 hover:text-current"
+        className="text-sm font-medium uppercase text-gray-600 hover:text-current"
       >
         Send
       </button>

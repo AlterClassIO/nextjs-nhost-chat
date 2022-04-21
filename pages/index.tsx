@@ -13,7 +13,7 @@ import Spinner from '../components/Spinner'
 
 import logo from '../public/logo.svg'
 
-import { GET_MESSAGES, CREATE_MESSAGE } from '../lib/queries'
+import { GET_MESSAGES, CREATE_MESSAGE, DELETE_MESSAGE } from '../lib/queries'
 
 const Home: NextPage = () => {
   const messagesListRef = useRef<HTMLInputElement>(null)
@@ -41,6 +41,7 @@ const Home: NextPage = () => {
   const messages = data?.messages ?? []
 
   const [createMessage] = useMutation(CREATE_MESSAGE)
+  const [deleteMessage] = useMutation(DELETE_MESSAGE)
 
   const sendMessage = async (text: string) => {
     if (!user) return
@@ -51,6 +52,16 @@ const Home: NextPage = () => {
           text,
           authorId: user.id,
         },
+      },
+    })
+  }
+
+  const removeMessage = async (id: string) => {
+    if (!id) return
+
+    return deleteMessage({
+      variables: {
+        id,
       },
     })
   }
@@ -72,7 +83,7 @@ const Home: NextPage = () => {
           </div>
         </header>
 
-        <main className="flex h-[calc(100vh-3.5rem)] flex-col items-center justify-center">
+        <main className="flex h-[calc(100vh-3.5rem)] flex-col items-center justify-center px-14">
           {isLoadingUser ? (
             <Spinner />
           ) : !isAuthenticated ? (
@@ -109,7 +120,7 @@ const Home: NextPage = () => {
                     <ol className="my-6 space-y-4">
                       {messages.map((msg: MessageProps) => (
                         <li key={msg.id}>
-                          <Message {...msg} />
+                          <Message {...msg} onDelete={removeMessage} />
                         </li>
                       ))}
                     </ol>

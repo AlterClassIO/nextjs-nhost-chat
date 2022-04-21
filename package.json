@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.5.10",
+    "@heroicons/react": "^1.0.6",
     "@nhost/nextjs": "^1.0.14",
     "@nhost/react": "^0.5.3",
     "@nhost/react-apollo": "^4.0.13",

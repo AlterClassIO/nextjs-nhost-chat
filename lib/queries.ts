@@ -23,3 +23,13 @@ export const CREATE_MESSAGE = gql`
     }
   }
 `
+
+export const DELETE_MESSAGE = gql`
+  mutation DeleteMessage($id: uuid!) {
+    delete_messages(where: { id: { _eq: $id } }) {
+      returning {
+        id
+      }
+    }
+  }
+`
