@@ -13,10 +13,15 @@ import Spinner from '../components/Spinner'
 
 import logo from '../public/logo.svg'
 
-import { GET_MESSAGES, CREATE_MESSAGE, DELETE_MESSAGE } from '../lib/queries'
+import {
+  GET_MESSAGES,
+  CREATE_MESSAGE,
+  DELETE_MESSAGE,
+  UPDATE_MESSAGE,
+} from '../lib/queries'
 
 const Home: NextPage = () => {
-  const messagesListRef = useRef<HTMLInputElement>(null)
+  const messagesListRef = useRef<HTMLElement>(null)
 
   const { isLoading: isLoadingUser, isAuthenticated } =
     useAuthenticationStatus()
@@ -42,8 +47,9 @@ const Home: NextPage = () => {
 
   const [createMessage] = useMutation(CREATE_MESSAGE)
   const [deleteMessage] = useMutation(DELETE_MESSAGE)
+  const [updateMessage] = useMutation(UPDATE_MESSAGE)
 
-  const sendMessage = async (text: string) => {
+  const createMessageHandler = async (text: string) => {
     if (!user) return
 
     return createMessage({
@@ -56,12 +62,23 @@ const Home: NextPage = () => {
     })
   }
 
-  const removeMessage = async (id: string) => {
+  const deleteMessageHandler = async (id: string) => {
     if (!id) return
 
     return deleteMessage({
       variables: {
         id,
+      },
+    })
+  }
+
+  const updateMessageHandler = async (id: string, text: string) => {
+    if (!id || !text) return
+
+    return updateMessage({
+      variables: {
+        id,
+        text,
       },
     })
   }
@@ -120,7 +137,11 @@ const Home: NextPage = () => {
                     <ol className="my-6 space-y-4">
                       {messages.map((msg: MessageProps) => (
                         <li key={msg.id}>
-                          <Message {...msg} onDelete={removeMessage} />
+                          <Message
+                            {...msg}
+                            onDelete={deleteMessageHandler}
+                            onEdit={updateMessageHandler}
+                          />
                         </li>
                       ))}
                     </ol>
@@ -133,7 +154,7 @@ const Home: NextPage = () => {
               </div>
 
               <div className="mx-auto mb-6 w-full max-w-screen-md flex-shrink-0">
-                <Form onSubmit={sendMessage} />
+                <Form onSubmit={createMessageHandler} />
               </div>
             </>
           )}

@@ -2,11 +2,10 @@ import { gql } from '@apollo/client'
 
 export const GET_MESSAGES = gql`
   subscription Messages {
-    messages {
+    messages(order_by: { createdAt: asc }) {
       id
       text
       createdAt
-      updatedAt
       author {
         id
         avatarUrl
@@ -27,6 +26,16 @@ export const CREATE_MESSAGE = gql`
 export const DELETE_MESSAGE = gql`
   mutation DeleteMessage($id: uuid!) {
     delete_messages(where: { id: { _eq: $id } }) {
+      returning {
+        id
+      }
+    }
+  }
+`
+
+export const UPDATE_MESSAGE = gql`
+  mutation UpdateMessage($id: uuid!, $text: String!) {
+    update_messages(where: { id: { _eq: $id } }, _set: { text: $text }) {
       returning {
         id
       }

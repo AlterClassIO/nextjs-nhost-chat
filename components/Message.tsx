@@ -1,8 +1,9 @@
+import { useRef, useEffect, useState } from 'react'
 import { useUserData } from '@nhost/nextjs'
 import { format } from 'date-fns'
 import className from 'classnames'
 import Avatar from './Avatar'
-import { TrashIcon } from '@heroicons/react/outline'
+import { PencilIcon, TrashIcon } from '@heroicons/react/outline'
 
 export type MessageProps = {
   id: string
@@ -15,18 +16,56 @@ export type MessageProps = {
     avatarUrl: string
   }
   onDelete: (id: string) => void
+  onEdit: (id: string, text: string) => void
 }
 
-const Message = ({ id, text, createdAt, author, onDelete }: MessageProps) => {
-  const user = useUserData()
+const Message = ({
+  id,
+  text,
+  createdAt,
+  author,
+  onDelete,
+  onEdit,
+}: MessageProps) => {
+  const inputRef = useRef<HTMLInputElement>(null)
 
+  const user = useUserData()
   const isAuthor = author?.id === user?.id
 
+  const [editing, setEditing] = useState(false)
+  const [newText, setNewText] = useState(text)
+
+  useEffect(() => {
+    if (editing && inputRef?.current) {
+      inputRef.current.focus()
+    }
+  }, [editing])
+
+  const cancel = () => {
+    setEditing(false)
+    setNewText(text)
+  }
+
+  const save = () => {
+    if (newText !== '' && newText !== text) {
+      setEditing(false)
+      onEdit(id, newText)
+    }
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.code === 'Escape') {
+      cancel()
+    } else if (e.code === 'Enter') {
+      save()
+    }
+  }
+
   return (
-    <div className="group flex items-start justify-between space-x-4 rounded-md p-2 hover:bg-gray-50">
-      <div className="flex space-x-4">
+    <div className="group flex items-start justify-between space-x-6 rounded-md p-3 hover:bg-gray-50">
+      <div className="flex flex-1 space-x-4">
         <Avatar src={author?.avatarUrl} alt={author?.displayName} />
-        <div className="space-y-1">
+        <div className="w-full space-y-1">
           <div className="flex items-center space-x-2">
             <span
               className={className(
@@ -42,18 +81,63 @@ const Message = ({ id, text, createdAt, author, onDelete }: MessageProps) => {
               </span>
             ) : null}
           </div>
-          <p>{text}</p>
+          {editing ? (
+            <>
+              <input
+                ref={inputRef}
+                type="text"
+                value={newText}
+                onChange={(e) => setNewText(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="w-full rounded border-2 bg-gray-100 p-2 focus:outline-none"
+              />
+              <p className="text-xs text-gray-500">
+                escape to{' '}
+                <button
+                  type="button"
+                  onClick={cancel}
+                  className="font-medium text-blue-600 hover:underline"
+                >
+                  cancel
+                </button>{' '}
+                - enter to{' '}
+                <button
+                  type="button"
+                  onClick={save}
+                  className="font-medium text-blue-600 hover:underline"
+                >
+                  save
+                </button>
+              </p>
+            </>
+          ) : (
+            <p>{newText}</p>
+          )}
         </div>
       </div>
 
-      {isAuthor ? (
-        <button
-          type="button"
-          onClick={() => onDelete(id)}
-          className="text-gray-500 opacity-0 hover:text-current group-hover:opacity-100"
-        >
-          <TrashIcon className="h-5 w-5" />
-        </button>
+      {isAuthor && !editing ? (
+        <div className="flex-shrink-0 space-x-2">
+          {/* Edit message */}
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            title="Edit message"
+            className="text-gray-500 opacity-0 hover:text-current group-hover:opacity-100"
+          >
+            <PencilIcon className="h-5 w-5" />
+          </button>
+
+          {/* Delete message */}
+          <button
+            type="button"
+            title="Delete message"
+            onClick={() => onDelete(id)}
+            className="text-gray-500 opacity-0 hover:text-current group-hover:opacity-100"
+          >
+            <TrashIcon className="h-5 w-5" />
+          </button>
+        </div>
       ) : null}
     </div>
   )
