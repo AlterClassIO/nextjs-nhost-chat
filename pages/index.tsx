@@ -1,4 +1,3 @@
-import { useRef } from 'react'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
@@ -21,8 +20,6 @@ import {
 } from '../lib/queries'
 
 const Home: NextPage = () => {
-  const messagesListRef = useRef<HTMLElement>(null)
-
   const { isLoading: isLoadingUser, isAuthenticated } =
     useAuthenticationStatus()
   const user = useUserData()
@@ -33,23 +30,14 @@ const Home: NextPage = () => {
     data,
   } = useSubscription(GET_MESSAGES, {
     skip: isLoadingUser || !isAuthenticated,
-    onSubscriptionData: () => {
-      const listEl = messagesListRef?.current
-      if (listEl) {
-        listEl.scrollTo({
-          top: listEl.scrollHeight,
-          behavior: 'smooth',
-        })
-      }
-    },
   })
-  const messages = data?.messages ?? []
+  let messages = data?.messages ?? []
 
   const [createMessage] = useMutation(CREATE_MESSAGE)
   const [deleteMessage] = useMutation(DELETE_MESSAGE)
   const [updateMessage] = useMutation(UPDATE_MESSAGE)
 
-  const createMessageHandler = async (text: string) => {
+  const createMessageHandler = (text: string) => {
     if (!user) return
 
     return createMessage({
@@ -62,7 +50,7 @@ const Home: NextPage = () => {
     })
   }
 
-  const deleteMessageHandler = async (id: string) => {
+  const deleteMessageHandler = (id: string) => {
     if (!id) return
 
     return deleteMessage({
@@ -72,7 +60,7 @@ const Home: NextPage = () => {
     })
   }
 
-  const updateMessageHandler = async (id: string, text: string) => {
+  const updateMessageHandler = (id: string, text: string) => {
     if (!id || !text) return
 
     return updateMessage({
@@ -100,17 +88,14 @@ const Home: NextPage = () => {
           </div>
         </header>
 
-        <main className="flex h-[calc(100vh-3.5rem)] flex-col items-center justify-center px-14">
+        <main className="flex h-[calc(100vh-3.5rem)] flex-col items-center justify-center">
           {isLoadingUser ? (
             <Spinner />
           ) : !isAuthenticated ? (
             <Login />
           ) : (
             <>
-              <div
-                ref={messagesListRef}
-                className="w-full flex-1 overflow-y-auto"
-              >
+              <div className="w-full flex-1 overflow-y-auto px-4">
                 <div className="mx-auto max-w-screen-md">
                   <div className="mt-12 border-b pb-6 text-center">
                     <h1 className="text-3xl font-extrabold">
