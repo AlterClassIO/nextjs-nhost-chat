@@ -1,8 +1,8 @@
 import Image from 'next/image'
 
 export type AvatarProps = {
-  src: string
-  alt: string
+  src: string | undefined
+  alt: string | undefined
 }
 
 const Avatar = ({ src = '', alt = '' }: AvatarProps) => (

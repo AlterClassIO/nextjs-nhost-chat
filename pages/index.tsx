@@ -6,7 +6,7 @@ import { useSubscription, useMutation } from '@apollo/client'
 import Message, { MessageProps } from '../components/Message'
 import MessageSkeleton from '../components/MessageSkeleton'
 import Form from '../components/Form'
-import Avatar from '../components/Avatar'
+import UserMenu from '../components/UserMenu'
 import Login from '../components/Login'
 import Spinner from '../components/Spinner'
 
@@ -82,9 +82,7 @@ const Home: NextPage = () => {
         <header className="h-14 bg-white shadow">
           <div className="container mx-auto flex h-full items-center justify-between px-4">
             <Image src={logo} />
-            {isAuthenticated && user ? (
-              <Avatar src={user.avatarUrl} alt={user.displayName} />
-            ) : null}
+            {isAuthenticated && user ? <UserMenu {...user} /> : null}
           </div>
         </header>
 
