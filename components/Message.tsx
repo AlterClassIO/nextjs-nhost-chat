@@ -53,7 +53,7 @@ const Message = ({
     }
   }
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.code === 'Escape') {
       cancel()
     } else if (e.code === 'Enter') {
