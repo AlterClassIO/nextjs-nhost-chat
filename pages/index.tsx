@@ -95,7 +95,7 @@ const Home: NextPage = () => {
             <>
               <div className="w-full flex-1 overflow-y-auto px-4">
                 <div className="mx-auto max-w-screen-md">
-                  <div className="mt-12 border-b pb-6 text-center">
+                  <div className="mt-8 border-b pb-6 text-center">
                     <h1 className="text-3xl font-extrabold">
                       Welcome to
                       <br />
@@ -117,7 +117,7 @@ const Home: NextPage = () => {
                       Something went wrong. Try to refresh the page.
                     </p>
                   ) : messages.length > 0 ? (
-                    <ol className="my-6 space-y-4">
+                    <ol className="my-6 space-y-2">
                       {messages.map((msg: MessageProps) => (
                         <li key={msg.id}>
                           <Message

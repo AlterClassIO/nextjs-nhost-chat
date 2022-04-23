@@ -27,7 +27,7 @@ const Message = ({
   onDelete,
   onEdit,
 }: MessageProps) => {
-  const inputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const user = useUserData()
   const isAuthor = author?.id === user?.id
@@ -36,8 +36,8 @@ const Message = ({
   const [newText, setNewText] = useState(text)
 
   useEffect(() => {
-    if (editing && inputRef?.current) {
-      inputRef.current.focus()
+    if (editing && textareaRef?.current) {
+      textareaRef.current.focus()
     }
   }, [editing])
 
@@ -53,7 +53,7 @@ const Message = ({
     }
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.code === 'Escape') {
       cancel()
     } else if (e.code === 'Enter') {
@@ -62,85 +62,85 @@ const Message = ({
   }
 
   return (
-    <div className="group flex items-start justify-between space-x-6 rounded-md p-3 hover:bg-gray-50">
-      <div className="flex flex-1 space-x-4">
-        <div className="flex-shrink-0">
-          <Avatar src={author?.avatarUrl} alt={author?.displayName} />
-        </div>
-        <div className="w-full space-y-1">
-          <div className="flex items-center space-x-2">
+    <div className="group space-y-3 rounded-md p-3 hover:bg-gray-50">
+      <div className="flex items-start justify-between space-x-6">
+        <div className="flex w-full space-x-3">
+          <div className="flex-shrink-0">
+            <Avatar src={author?.avatarUrl} alt={author?.displayName} />
+          </div>
+          <div className="flex flex-col space-y-1">
             <span
-              className={className(
-                'inline-block font-medium',
-                isAuthor && 'text-blue-700'
-              )}
+              className={className('font-medium', isAuthor && 'text-blue-700')}
             >
               {author?.displayName || 'User'}
             </span>
             {createdAt ? (
-              <span className="inline-block text-xs text-gray-500">
+              <span className="text-xs text-gray-500">
                 {format(new Date(createdAt), 'dd/MM/yyyy - HH:mm')}
               </span>
             ) : null}
           </div>
-          {editing ? (
-            <>
-              <input
-                ref={inputRef}
-                type="text"
-                value={newText}
-                onChange={(e) => setNewText(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="w-full rounded border-2 bg-gray-100 p-2 focus:outline-none"
-              />
-              <p className="text-xs text-gray-500">
-                escape to{' '}
-                <button
-                  type="button"
-                  onClick={cancel}
-                  className="font-medium text-blue-600 hover:underline"
-                >
-                  cancel
-                </button>{' '}
-                - enter to{' '}
-                <button
-                  type="button"
-                  onClick={save}
-                  className="font-medium text-blue-600 hover:underline"
-                >
-                  save
-                </button>
-              </p>
-            </>
-          ) : (
-            <p>{newText}</p>
-          )}
         </div>
+
+        {isAuthor && !editing ? (
+          <div className="flex flex-1 space-x-2">
+            {/* Edit message */}
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              title="Edit message"
+              className="text-gray-500 opacity-0 hover:text-current group-hover:opacity-100"
+            >
+              <PencilIcon className="h-5 w-5" />
+            </button>
+
+            {/* Delete message */}
+            <button
+              type="button"
+              title="Delete message"
+              onClick={() => onDelete(id)}
+              className="text-gray-500 opacity-0 hover:text-current group-hover:opacity-100"
+            >
+              <TrashIcon className="h-5 w-5" />
+            </button>
+          </div>
+        ) : null}
       </div>
 
-      {isAuthor && !editing ? (
-        <div className="flex-shrink-0 space-x-2">
-          {/* Edit message */}
-          <button
-            type="button"
-            onClick={() => setEditing(true)}
-            title="Edit message"
-            className="text-gray-500 opacity-0 hover:text-current group-hover:opacity-100"
-          >
-            <PencilIcon className="h-5 w-5" />
-          </button>
-
-          {/* Delete message */}
-          <button
-            type="button"
-            title="Delete message"
-            onClick={() => onDelete(id)}
-            className="text-gray-500 opacity-0 hover:text-current group-hover:opacity-100"
-          >
-            <TrashIcon className="h-5 w-5" />
-          </button>
-        </div>
-      ) : null}
+      <div className="ml-[3.25rem]">
+        {editing ? (
+          <div>
+            <textarea
+              ref={textareaRef}
+              type="text"
+              value={newText}
+              onChange={(e) => setNewText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="w-full rounded border-2 border-blue-500 bg-gray-100 p-2 focus:outline-none"
+            />
+            <p className="text-xs text-gray-500">
+              escape to{' '}
+              <button
+                type="button"
+                onClick={cancel}
+                className="font-medium text-blue-600 hover:underline"
+              >
+                cancel
+              </button>{' '}
+              - enter to{' '}
+              <button
+                type="button"
+                onClick={save}
+                className="font-medium text-blue-600 hover:underline"
+              >
+                save
+              </button>
+            </p>
+          </div>
+        ) : (
+          <p>{newText}</p>
+        )}
+      </div>
     </div>
   )
 }
