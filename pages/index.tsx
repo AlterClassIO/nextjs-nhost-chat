@@ -136,7 +136,7 @@ const Home: NextPage = () => {
                 </div>
               </div>
 
-              <div className="mx-auto mb-6 w-full max-w-screen-md flex-shrink-0">
+              <div className="mx-auto mb-6 w-full max-w-screen-md flex-shrink-0 px-4">
                 <Form onSubmit={createMessageHandler} />
               </div>
             </>

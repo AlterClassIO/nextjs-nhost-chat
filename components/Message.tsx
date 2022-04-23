@@ -64,7 +64,9 @@ const Message = ({
   return (
     <div className="group flex items-start justify-between space-x-6 rounded-md p-3 hover:bg-gray-50">
       <div className="flex flex-1 space-x-4">
-        <Avatar src={author?.avatarUrl} alt={author?.displayName} />
+        <div className="flex-shrink-0">
+          <Avatar src={author?.avatarUrl} alt={author?.displayName} />
+        </div>
         <div className="w-full space-y-1">
           <div className="flex items-center space-x-2">
             <span
