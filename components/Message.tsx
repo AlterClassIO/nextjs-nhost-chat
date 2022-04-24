@@ -112,7 +112,6 @@ const Message = ({
           <div>
             <textarea
               ref={textareaRef}
-              type="text"
               value={newText}
               onChange={(e) => setNewText(e.target.value)}
               onKeyDown={handleKeyDown}
