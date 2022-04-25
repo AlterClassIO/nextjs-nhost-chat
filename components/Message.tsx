@@ -47,7 +47,7 @@ const Message = ({
   }
 
   const save = () => {
-    if (newText !== text) {
+    if (newText === text) {
       cancel()
     } else if (newText !== '') {
       setEditing(false)
